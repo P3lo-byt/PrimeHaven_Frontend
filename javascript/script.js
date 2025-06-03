@@ -34,7 +34,7 @@ fetch(`${BACKEND_URL}/api/products`)
 document.addEventListener("DOMContentLoaded", function () {
   const container = document.getElementById("product-container");
 
-  fetch("https://primehaven-backend.onrender.com")
+  fetch("https://primehaven-backend.onrender.com/api/products")
     .then(res => res.json())
     .then(products => {
       renderProducts(products);
