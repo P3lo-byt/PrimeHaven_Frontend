@@ -22,20 +22,56 @@
   <ul id="checkout-cart-items"></ul>
   <h3>Total: R<span id="checkout-total-price">0.00</span></h3>
 
-  <!-- Checkout Form -->
-  <form id="checkout-form" onsubmit="return submitOrder();">
-    <h2>Delivery Details</h2>
-    <input type="text" id="full-name" placeholder="Your Full Name" required /><br />
-    <input type="email" id="email" placeholder="Your Email" required /><br />
-    <input type="text" id="address" placeholder="Delivery Address" required /><br />
-    <button type="submit">Place Order</button>
-  </form>
+ <form id="checkout-form">
+      <label>Name: <input type="text" name="name" required></label><br>
+      <label>Email: <input type="email" name="email" required></label><br>
+      <label>Address: <textarea name="address" required></textarea></label><br>
+      <button type="submit">Confirm Order</button>
+    </form>
+  </main>
 
-  <!-- Order Success Message -->
-  <div id="order-success" style="display: none;">
-    <h2>Thank you for your order!</h2>
-    <p>We'll contact you soon to confirm delivery and payment.</p>
-  </div>
+  <script>
+document.addEventListener("DOMContentLoaded", function () {
+  const BACKEND_URL = "https://primehaven-backend.onrender.com";
+  const form = document.getElementById("checkout-form");
+
+  if (!form) return; // prevent error if form isn't found
+
+  form.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    if (cart.length === 0) {
+      alert("Your cart is empty.");
+      return;
+    }
+
+    const formData = {
+      name: form.querySelector("input[name='name']").value,
+      email: form.querySelector("input[name='email']").value,
+      address: form.querySelector("textarea[name='address']").value,
+      cartItems: cart
+    };
+
+    fetch(`${BACKEND_URL}/api/sale`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData)
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert("Order confirmed! " + (data.message || ""));
+      localStorage.removeItem("cart");
+      window.location.href = "index.html";
+    })
+    .catch(err => {
+      console.error("Checkout failed:", err);
+      alert("Something went wrong during checkout.");
+    });
+  });
+});
+</script>
+
 
 </body>
 </html>
