@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Cart - PrimeHaven</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/cart.js" defer></script>
+  <script src="js/checkout.js" defer></script>
+</head>
+<body>
+  <!-- Navigation bar-->
+     <nav>
+         <a href="index.html">Home</a>
+         <a href="products.html">Product</a>
+         <a href="cart.html">Cart</a>
+         <a href="checkout.html">Checkout</a>
+     </nav>
+
+  <h1>Your Cart</h1>
+
+  <!-- Cart Items -->
+  <div id="cart-container"></div>
+
+  <!-- Total Price -->
+  <h3>Total: R<span id="total-price">0.00</span></h3>
+
+  <!-- Success Message -->
+  <div id="order-success" style="display: none;">
+    <h2>Thank you for your order!</h2>
+    <p>We'll contact you soon to confirm delivery and payment.</p>
+  </div>
+
+</body>
+</html>
