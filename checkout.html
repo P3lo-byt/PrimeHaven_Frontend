@@ -3,26 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <title>Checkout - PrimeHaven</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <script src="js/checkout.js" defer></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Navigation bar-->
-     <nav>
-         <a href="index.html">Home</a>
-         <a href="cart.html">Cart</a>
-         <a href="checkout.html">Checkout</a>
-     </nav>
+  <!-- Navigation -->
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="cart.html">Cart</a>
+    <a href="checkout.html">Checkout</a>
+  </nav>
 
+  <main>
+    <h1>Checkout</h1>
 
-  <h1>Checkout</h1>
+    <!-- Cart Summary -->
+    <h2>Your Cart Summary</h2>
+    <ul id="checkout-cart-items"></ul>
+    <h3>Total: R<span id="checkout-total-price">0.00</span></h3>
 
-  <!-- Cart Summary -->
-  <h2>Your Cart Summary</h2>
-  <ul id="checkout-cart-items"></ul>
-  <h3>Total: R<span id="checkout-total-price">0.00</span></h3>
-
- <form id="checkout-form">
+    <form id="checkout-form">
       <label>Name: <input type="text" name="name" required></label><br>
       <label>Email: <input type="email" name="email" required></label><br>
       <label>Address: <textarea name="address" required></textarea></label><br>
@@ -30,48 +30,61 @@
     </form>
   </main>
 
+  <footer>
+    <p>&copy; 2025 PrimeHaven. All rights reserved | +27 74 339 5974.</p>
+  </footer>
+
   <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const BACKEND_URL = "https://primehaven-backend.onrender.com";
-  const form = document.getElementById("checkout-form");
+    document.addEventListener("DOMContentLoaded", function () {
+      const BACKEND_URL = "https://primehaven-backend.onrender.com";
+      const form = document.getElementById("checkout-form");
+      const cartItemsContainer = document.getElementById("checkout-cart-items");
+      const totalPriceEl = document.getElementById("checkout-total-price");
 
-  if (!form) return; // prevent error if form isn't found
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      let total = 0;
 
-  form.addEventListener("submit", function(e) {
-    e.preventDefault();
+      cart.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = `${item.name} (x${item.quantity}) - R${(item.price * item.quantity).toFixed(2)}`;
+        cartItemsContainer.appendChild(li);
+        total += item.price * item.quantity;
+      });
 
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    if (cart.length === 0) {
-      alert("Your cart is empty.");
-      return;
-    }
+      totalPriceEl.textContent = total.toFixed(2);
 
-    const formData = {
-      name: form.querySelector("input[name='name']").value,
-      email: form.querySelector("input[name='email']").value,
-      address: form.querySelector("textarea[name='address']").value,
-      cartItems: cart
-    };
+      form.addEventListener("submit", function(e) {
+        e.preventDefault();
 
-    fetch(`${BACKEND_URL}/api/sale`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData)
-    })
-    .then(res => res.json())
-    .then(data => {
-      alert("Order confirmed! " + (data.message || ""));
-      localStorage.removeItem("cart");
-      window.location.href = "index.html";
-    })
-    .catch(err => {
-      console.error("Checkout failed:", err);
-      alert("Something went wrong during checkout.");
+        if (cart.length === 0) {
+          alert("Your cart is empty.");
+          return;
+        }
+
+        const formData = {
+          name: form.querySelector("input[name='name']").value,
+          email: form.querySelector("input[name='email']").value,
+          address: form.querySelector("textarea[name='address']").value,
+          cartItems: cart
+        };
+
+        fetch(`${BACKEND_URL}/api/sale`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData)
+        })
+        .then(res => res.json())
+        .then(data => {
+          alert("Order confirmed! " + (data.message || ""));
+          localStorage.removeItem("cart");
+          window.location.href = "index.html";
+        })
+        .catch(err => {
+          console.error("Checkout failed:", err);
+          alert("Something went wrong during checkout.");
+        });
+      });
     });
-  });
-});
-</script>
-
-
+  </script>
 </body>
 </html>

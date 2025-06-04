@@ -1,10 +1,11 @@
-function addToCart(id) {
-  const BACKEND_URL = "https://primehaven-backend.onrender.com";
+const BACKEND_URL = "https://primehaven-backend.onrender.com";
 
-fetch(`${BACKEND_URL}/api/products`)
-  .then(res => res.json())
-  .then(data => {
-    const product = products.find(p => p.id === id);
+// Add to Cart Function
+function addToCart(id) {
+  fetch(`${BACKEND_URL}/api/products`)
+    .then(res => res.json())
+    .then(data => {
+      const product = data.find(p => p.id === id);
       if (!product) return alert("Product not found");
 
       let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -28,17 +29,17 @@ fetch(`${BACKEND_URL}/api/products`)
       console.error("Error adding to cart:", err);
       alert("Could not add to cart.");
     });
-   }
+}
 
-// ⬇ DOMContentLoaded handles rendering only
+// DOMContentLoaded logic
 document.addEventListener("DOMContentLoaded", function () {
   const container = document.getElementById("product-container");
+  if (!container) return;
 
-  fetch("https://primehaven-backend.onrender.com/api/products")
+  fetch(`${BACKEND_URL}/api/products`)
     .then(res => res.json())
     .then(products => {
       renderProducts(products);
-      setupCategoryFiltering(products);
     })
     .catch(error => {
       console.error("Failed to load products:", error);
@@ -60,33 +61,15 @@ document.addEventListener("DOMContentLoaded", function () {
       container.appendChild(card);
     });
   }
+});
 
-  function setupCategoryFiltering(products) {
-    document.querySelectorAll(".nav-menu a[data-category]").forEach(link => {
-      link.addEventListener("click", (e) => {
-        e.preventDefault();
-        const category = e.target.dataset.category;
-        const filtered = products.filter(p => p.category === category);
-        renderProducts(filtered);
-      });
-    });
-  }
-});
-   
-document.getElementById("browseTreatsBtn").addEventListener("click", function () {
-    fetch("https://primehaven-backend.onrender.com/api/products")
-        .then(response => {
-            if (!response.ok) throw new Error("Network response was not ok");
-            return response.json();
-        })
-        .then(data => {
-            // Store products in localStorage or sessionStorage
-            localStorage.setItem("productsData", JSON.stringify(data));
-            // Redirect to products page
-            window.location.href = "index.html";
-        })
-        .catch(error => {
-            console.error("Failed to fetch products:", error);
-            alert("Could not load products. Please try again later.");
-        });
-});
+// Cart and Checkout Utilities
+function checkout() {
+  alert("Proceeding to checkout...");
+  window.location.href = "checkout.html";
+}
+
+function clearCart() {
+  localStorage.removeItem("cart");
+  location.reload();
+}
