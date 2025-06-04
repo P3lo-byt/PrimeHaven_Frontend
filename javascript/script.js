@@ -73,3 +73,20 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
    
+document.getElementById("browseTreatsBtn").addEventListener("click", function () {
+    fetch("https://primehaven-backend.onrender.com/api/products")
+        .then(response => {
+            if (!response.ok) throw new Error("Network response was not ok");
+            return response.json();
+        })
+        .then(data => {
+            // Store products in localStorage or sessionStorage
+            localStorage.setItem("productsData", JSON.stringify(data));
+            // Redirect to products page
+            window.location.href = "index.html";
+        })
+        .catch(error => {
+            console.error("Failed to fetch products:", error);
+            alert("Could not load products. Please try again later.");
+        });
+});
