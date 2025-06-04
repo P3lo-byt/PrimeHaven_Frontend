@@ -2,57 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <!-- Makes the site responsive on mobile and tablets -->
-  <meta name="viewport" content="width=device-width", initial-scale="1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PrimeHaven</title>
-  <!-- Link to external stylesheet -->
   <link rel="stylesheet" href="style.css">
+  <script src="javascript/script.js" defer></script>
 </head>
 <body>
-    <!-- Navigation bar-->
-     <nav>
-         <a href="index.html">Home</a>
-         <a href="cart.html">Cart</a>
-         <a href="checkout.html">Checkout</a>
-     </nav>
+  <!-- Navigation bar-->
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="cart.html">Cart</a>
+    <a href="checkout.html">Checkout</a>
+  </nav>
 
-  <!-- Main content starts here -->
+  <!-- Main content -->
   <main>
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero-content">
         <h1>Welcome to PrimeHaven</h1>
         <p>Your home for delightful sweets, desserts, and packages.</p>
-        <!-- Main Call to Action: Browse Treats -->
-        <a id="browseTreatsBtn" class="btn">Browse Treats</a>
+        <button id="browseTreatsBtn" class="btn">Browse Treats</button>
       </div>
     </section>
 
-    <!-- Optional preview section -->   
+    <!-- Popular Categories -->
     <section class="preview">
       <h2>Popular Categories</h2>
       <div class="categories">
-
-        <!-- Sweets Category -->
-        <div class="category-card">
-          <h3>Sweets</h3>
-        </div>
-        <!-- Desserts Category -->
-        <div class="category-card">
-          <h3>Desserts</h3>
-        </div>
-        <!-- Packages Category -->
-        <div class="category-card">
-          <h3>Packages</h3>
-        </div>
-
+        <div class="category-card"><h3>Sweets</h3></div>
+        <div class="category-card"><h3>Desserts</h3></div>
+        <div class="category-card"><h3>Packages</h3></div>
       </div>
     </section>
   </main>
-  <!-- Footer Section -->
+
+  <!-- Footer -->
   <footer>
     <p>&copy; 2025 PrimeHaven. All rights reserved | +27 74 339 5974.</p>
   </footer>
-
 </body>
 </html>
