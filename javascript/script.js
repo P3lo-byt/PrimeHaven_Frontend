@@ -9,7 +9,6 @@ function addToCart(id) {
       if (!product) return alert("Product not found");
 
       let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
       const existing = cart.find(item => item.id === id);
       if (existing) {
         existing.quantity += 1;
@@ -34,49 +33,33 @@ function addToCart(id) {
 // DOMContentLoaded logic
 document.addEventListener("DOMContentLoaded", function () {
   const container = document.getElementById("product-container");
-  if (!container) return;
 
-  fetch(`${BACKEND_URL}/api/products`)
-    .then(res => res.json())
-    .then(products => {
-      renderProducts(products);
-    })
-    .catch(error => {
-      console.error("Failed to load products:", error);
-      container.innerHTML = "<p>Could not load product data.</p>";
-    });
-
-  function renderProducts(productList) {
-    container.innerHTML = "";
-    productList.forEach(product => {
-      const card = document.createElement("div");
-      card.className = "product-card";
-      card.innerHTML = `
-        <img src="${product.image}" alt="${product.name}">
-        <h3>${product.name}</h3>
-        <p>${product.description}</p>
-        <p><strong>R${product.price.toFixed(2)}</strong></p>
-        <button onclick="addToCart('${product.id}')">Add to Cart</button>
-      `;
-      container.appendChild(card);
-    });
+  // Render products page
+  if (container) {
+    fetch(`${BACKEND_URL}/api/products`)
+      .then(res => res.json())
+      .then(products => {
+        renderProducts(products);
+        setupFiltering(products);
+      })
+      .catch(error => {
+        console.error("Failed to load products:", error);
+        container.innerHTML = "<p>Could not load product data.</p>";
+      });
   }
-});
 
-// Cart and Checkout Utilities
-function checkout() {
-  alert("Proceeding to checkout...");
-  window.location.href = "checkout.html";
-}
+  // Handle cart display on cart.html
+  const cartContainer = document.getElementById("cart-container");
+  if (cartContainer) {
+    fetch(`${BACKEND_URL}/api/products`)
+      .then(res => res.json())
+      .then(products => showCart(products))
+      .catch(err => {
+        console.error("Failed to load cart:", err);
+        cartContainer.innerHTML = "<p>Could not load cart items.</p>";
+      });
+  }
 
-function clearCart() {
-  localStorage.removeItem("cart");
-  location.reload();
-}
-
-
-// Handle Browse Treats Button
-document.addEventListener("DOMContentLoaded", function () {
   const browseBtn = document.getElementById("browseTreatsBtn");
   if (browseBtn) {
     browseBtn.addEventListener("click", function () {
@@ -92,32 +75,8 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
   }
-});
-
-
-// Category Filtering
-document.addEventListener("DOMContentLoaded", function () {
-  const container = document.getElementById("product-container");
-  const tabs = document.querySelectorAll(".tabs button");
-
-  if (tabs.length > 0) {
-    fetch(`${BACKEND_URL}/api/products`)
-      .then(res => res.json())
-      .then(products => {
-        renderProducts(products);
-
-        tabs.forEach(btn => {
-          btn.addEventListener("click", () => {
-            const category = btn.dataset.category;
-            const filtered = category === "all" ? products : products.filter(p => p.category === category);
-            renderProducts(filtered);
-          });
-        });
-      });
-  }
 
   function renderProducts(productList) {
-    if (!container) return;
     container.innerHTML = "";
     productList.forEach(product => {
       const card = document.createElement("div");
@@ -132,4 +91,70 @@ document.addEventListener("DOMContentLoaded", function () {
       container.appendChild(card);
     });
   }
+
+  function setupFiltering(products) {
+    const tabs = document.querySelectorAll(".tabs button");
+    tabs.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const category = btn.dataset.category;
+        const filtered = category === "all" ? products : products.filter(p => p.category === category);
+        renderProducts(filtered);
+      });
+    });
+  }
+
+  function showCart(products) {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    cartContainer.innerHTML = "";
+
+    if (cart.length === 0) {
+      cartContainer.innerHTML = "<p>Your cart is empty.</p>";
+      return;
+    }
+
+    let total = 0;
+
+    cart.forEach(item => {
+      const product = products.find(p => p.id === item.id);
+      const subtotal = product.price * item.quantity;
+      total += subtotal;
+
+      const div = document.createElement("div");
+      div.innerHTML = `
+        <h3>${product.name}</h3>
+        <p>Price: R${product.price.toFixed(2)}</p>
+        <label>
+          Quantity:
+          <input type="number" min="1" value="${item.quantity}" onchange="updateQuantity('${item.id}', this.value)">
+        </label>
+        <p>Subtotal: R${subtotal.toFixed(2)}</p>
+        <hr>
+      `;
+      cartContainer.appendChild(div);
+    });
+
+    const summary = document.createElement("div");
+    summary.innerHTML = `<h2>Total: R${total.toFixed(2)}</h2>`;
+    cartContainer.appendChild(summary);
+  }
 });
+
+// Quantity Update + Utilities
+function updateQuantity(id, qty) {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const item = cart.find(i => i.id === id);
+  if (item) {
+    item.quantity = parseInt(qty);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    location.reload();
+  }
+}
+
+function clearCart() {
+  localStorage.removeItem("cart");
+  location.reload();
+}
+
+function checkout() {
+  window.location.href = "checkout.html";
+}
